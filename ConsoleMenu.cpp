@@ -321,8 +321,17 @@ void ConsoleMenu::MatrixMenu() {
         switch (choice) {
         case 1: {  // Создать новую матрицу
             clearConsole();
-            Matrix m
+            int rows, cols;
+            std::cout << "Введите количество строк: ";
+            std::cin >> rows;
+            std::cout << "Введите количество столбцов: ";
+            std::cin >> cols;
+
+            // Создаём матрицу с введёнными размерами
+            Matrix m(rows, cols);
+            std::cout << "Введите элементы матрицы:\n";
             std::cin >> m;  // Используем перегрузку оператора >> для ввода матрицы
+
             matrices.push_back(m);
             std::cout << "Матрица создана!\n";
             pause();
