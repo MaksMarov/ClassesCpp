@@ -119,20 +119,10 @@ std::ostream& operator<<(std::ostream& os, const Complex& c) {
 // Операции ввода
 std::istream& operator>>(std::istream& is, Complex& c) {
     system("cls");
-    std::cout << "╔════════════════════════════════╗\n";
-    std::cout << "║      Ввод комплексного числа   ║\n";
-    std::cout << "╚════════════════════════════════╝\n";
-
     std::cout << "Введите действительную часть: ";
     is >> c.real;
 
     std::cout << "Введите мнимую часть: ";
     is >> c.imag;
-
-    std::cout << "\nКомплексное число успешно создано: " << c << "\n";
-    std::cout << "Нажмите Enter для продолжения...";
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cin.get();
-
     return is;
 }

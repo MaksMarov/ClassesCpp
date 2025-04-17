@@ -59,6 +59,10 @@ double Vector3D::length() const {
     return std::sqrt(x * x + y * y + z * z); // Теорема Пифагора для длины
 }
 
+double Vector3D::cos(const Vector3D& other) const {
+    return dot(other) / (length() * other.length());
+}
+
 // Оператор вывода
 std::ostream& operator<<(std::ostream& os, const Vector3D& v) {
     os << "Vector3D(" << v.x << ", " << v.y << ", " << v.z << ")"; // Форматированный вывод вектора

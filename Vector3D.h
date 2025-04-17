@@ -37,6 +37,8 @@ public:
     // Длина вектора
     double length() const; // Вычисление длины вектора
 
+    double cos(const Vector3D& other) const; //Косинус угла между векторами
+
     // Перегрузка операторов вывода/ввода
     friend std::ostream& operator<<(std::ostream& os, const Vector3D& v); // Оператор вывода
     friend std::istream& operator>>(std::istream& is, Vector3D& v); // Оператор ввода

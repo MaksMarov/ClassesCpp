@@ -62,7 +62,8 @@ void ConsoleMenu::ComplexMenu() {
                 if (index1 > 0 && index1 <= objects.size() && index2 > 0 && index2 <= objects.size()) {
                     Complex c1 = objects[index1 - 1];
                     Complex c2 = objects[index2 - 1];
-
+                    std::cout << "Первое число: " << c1 << "\n";
+                    std::cout << "Второе число: " << c2 << "\n";
                     std::cout << "Операции с комплексными числами:\n";
                     std::cout << "Сложение: " << c1 + c2 << "\n";
                     std::cout << "Вычитание: " << c1 - c2 << "\n";
@@ -83,19 +84,21 @@ void ConsoleMenu::ComplexMenu() {
             }
             else {
                 size_t index;
-                double real_val;
+                double scalar;
                 std::cout << "Выберите число (1 - " << objects.size() << "): ";
                 std::cin >> index;
                 std::cout << "Введите вещественное число: ";
-                std::cin >> real_val;
+                std::cin >> scalar;
 
                 if (index > 0 && index <= objects.size()) {
                     Complex c = objects[index - 1];
+                    std::cout << "Число: " << c << "\n";
+                    std::cout << "Скаляр: " << scalar << "\n";
                     std::cout << "Операции с вещественным числом:\n";
-                    std::cout << "Сложение: " << c + real_val << "\n";
-                    std::cout << "Вычитание: " << c - real_val << "\n";
-                    std::cout << "Умножение: " << c * real_val << "\n";
-                    std::cout << "Деление: " << c / real_val << "\n";
+                    std::cout << "Сложение: " << c + scalar << "\n";
+                    std::cout << "Вычитание: " << c - scalar << "\n";
+                    std::cout << "Умножение: " << c * scalar << "\n";
+                    std::cout << "Деление: " << c / scalar << "\n";
                 }
                 else {
                     std::cout << "Некорректный индекс. Попробуйте снова.\n";
@@ -116,6 +119,7 @@ void ConsoleMenu::ComplexMenu() {
 
                 if (index > 0 && index <= objects.size()) {
                     Complex c = objects[index - 1];
+                    std::cout << "Число: " << c << "\n";
                     std::cout << "Модуль: " << c.abs() << "\n";
                     std::cout << "Аргумент: " << c.arg() << "\n";
                     std::cout << "Сопряжённое: " << c.conjugate() << "\n";
@@ -149,6 +153,7 @@ void ConsoleMenu::Vector3DMenu() {
         std::cout << "4. Демонстрация операций с числом\n";
         std::cout << "5. Скалярное и векторное произведение\n";
         std::cout << "6. Длина вектора\n";
+        std::cout << "7. Косинус угла между векторами\n";
         std::cout << "0. Назад\n";
         std::cout << "==============================\n";
         std::cout << "Выберите пункт: ";
@@ -191,15 +196,17 @@ void ConsoleMenu::Vector3DMenu() {
                 std::cout << "Создайте минимум два вектора для операций.\n";
             }
             else {
-                size_t i1, i2;
-                std::cout << "Выберите индекс первого вектора: ";
-                std::cin >> i1;
-                std::cout << "Выберите индекс второго вектора: ";
-                std::cin >> i2;
+                size_t index1, index2;
+                std::cout << "Выберите первый вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index1;
+                std::cout << "Выберите второй вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index2;
 
-                if (i1 < vectors.size() && i2 < vectors.size()) {
-                    const Vector3D& a = vectors[i1];
-                    const Vector3D& b = vectors[i2];
+                if (index1 > 0 && index1 <= vectors.size() && index2 > 0 && index2 <= vectors.size()) {
+                    const Vector3D& a = vectors[index1 - 1];
+                    const Vector3D& b = vectors[index2 - 1];
+                    std::cout << "Первый вектор:" << a << "\n";
+                    std::cout << "Второй вектор:" << b << "\n";
                     std::cout << "\n" << a << " + " << b << " = " << (a + b) << "\n";
                     std::cout << a << " - " << b << " = " << (a - b) << "\n";
                     std::cout << a << " == " << b << " ? " << (a == b ? "Да" : "Нет") << "\n";
@@ -217,15 +224,15 @@ void ConsoleMenu::Vector3DMenu() {
                 std::cout << "Нет векторов.\n";
             }
             else {
-                size_t idx;
+                size_t index;
                 double scalar;
-                std::cout << "Выберите индекс вектора: ";
-                std::cin >> idx;
+                std::cout << "Выберите вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index;
                 std::cout << "Введите скаляр: ";
                 std::cin >> scalar;
 
-                if (idx < vectors.size()) {
-                    const Vector3D& v = vectors[idx];
+                if (index > 0 && index <= vectors.size()) {
+                    const Vector3D& v = vectors[index - 1];
                     std::cout << "\n" << v << " * " << scalar << " = " << (v * scalar) << "\n";
                     std::cout << v << " / " << scalar << " = " << (v / scalar) << "\n";
                 }
@@ -239,18 +246,20 @@ void ConsoleMenu::Vector3DMenu() {
         case 5: { // Скалярное и векторное произведение
             clearConsole();
             if (vectors.size() < 2) {
-                std::cout << "Нужно как минимум два вектора.\n";
+                std::cout << "Создайте минимум два вектора для операций.\n";
             }
             else {
-                size_t i1, i2;
-                std::cout << "Выберите индекс первого вектора: ";
-                std::cin >> i1;
-                std::cout << "Выберите индекс второго вектора: ";
-                std::cin >> i2;
+                size_t index1, index2;
+                std::cout << "Выберите первый вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index1;
+                std::cout << "Выберите второй вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index2;
 
-                if (i1 < vectors.size() && i2 < vectors.size()) {
-                    const Vector3D& a = vectors[i1];
-                    const Vector3D& b = vectors[i2];
+                if (index1 > 0 && index1 <= vectors.size() && index2 > 0 && index2 <= vectors.size()) {
+                    const Vector3D& a = vectors[index1 - 1];
+                    const Vector3D& b = vectors[index2 - 1];
+                    std::cout << "Первый вектор:" << a << "\n";
+                    std::cout << "Второй вектор:" << b << "\n";
                     std::cout << "\nСкалярное произведение: " << a.dot(b) << "\n";
                     std::cout << "Векторное произведение: " << a.cross(b) << "\n";
                 }
@@ -267,16 +276,43 @@ void ConsoleMenu::Vector3DMenu() {
                 std::cout << "Нет векторов.\n";
             }
             else {
-                size_t idx;
-                std::cout << "Выберите индекс вектора: ";
-                std::cin >> idx;
+                size_t index;
+                std::cout << "Выберите вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index;
 
-                if (idx < vectors.size()) {
-                    const Vector3D& v = vectors[idx];
+                if (index > 0 && index <= vectors.size()) {
+                    const Vector3D& v = vectors[index - 1];
+                    std::cout << "Вектор:" << v << "\n";
                     std::cout << "\nДлина вектора: " << v.length() << "\n";
                 }
                 else {
                     std::cout << "Неверный индекс.\n";
+                }
+            }
+            pause();
+            break;
+        }
+        case 7: { // Косинус угла между векторами
+            clearConsole();
+            if (vectors.size() < 2) {
+                std::cout << "Создайте минимум два вектора для операций.\n";
+            }
+            else {
+                size_t index1, index2;
+                std::cout << "Выберите первый вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index1;
+                std::cout << "Выберите второй вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index2;
+
+                if (index1 > 0 && index1 <= vectors.size() && index2 > 0 && index2 <= vectors.size()) {
+                    const Vector3D& a = vectors[index1 - 1];
+                    const Vector3D& b = vectors[index2 - 1];
+                    std::cout << "Первый вектор:" << a << "\n";
+                    std::cout << "Второй вектор:" << b << "\n";
+                    std::cout << "\nКосинус угла a^b:" << a.cos(b) << "\n";
+                }
+                else {
+                    std::cout << "Неверные индексы.\n";
                 }
             }
             pause();
