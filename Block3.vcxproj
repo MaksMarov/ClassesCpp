@@ -128,22 +128,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Block3.cpp" />
+    <ClCompile Include="Circle.cpp" />
     <ClCompile Include="Complex.cpp" />
     <ClCompile Include="ConsoleMenu.cpp" />
+    <ClCompile Include="Line2D.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Plane3D.cpp" />
+    <ClCompile Include="Point2D.cpp" />
     <ClCompile Include="Polynomial.cpp" />
     <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="Vector2D.cpp" />
     <ClCompile Include="Vector3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Info.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Circle.h" />
     <ClInclude Include="Complex.h" />
     <ClInclude Include="ConsoleMenu.h" />
+    <ClInclude Include="Line2D.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="Plane3D.h" />
+    <ClInclude Include="Point2D.h" />
     <ClInclude Include="Polynomial.h" />
     <ClInclude Include="Triangle.h" />
+    <ClInclude Include="Vector2D.h" />
     <ClInclude Include="Vector3D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

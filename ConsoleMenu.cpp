@@ -154,6 +154,7 @@ void ConsoleMenu::Vector3DMenu() {
         std::cout << "5. Скалярное и векторное произведение\n";
         std::cout << "6. Длина вектора\n";
         std::cout << "7. Косинус угла между векторами\n";
+        std::cout << "8. Смешанное произведение (проверка на базис)\n";
         std::cout << "0. Назад\n";
         std::cout << "==============================\n";
         std::cout << "Выберите пункт: ";
@@ -310,6 +311,37 @@ void ConsoleMenu::Vector3DMenu() {
                     std::cout << "Первый вектор:" << a << "\n";
                     std::cout << "Второй вектор:" << b << "\n";
                     std::cout << "\nКосинус угла a^b:" << a.cos(b) << "\n";
+                }
+                else {
+                    std::cout << "Неверные индексы.\n";
+                }
+            }
+            pause();
+            break;
+        }        
+        case 8: { // Смешанное произведение
+            clearConsole();
+            if (vectors.size() < 3) {
+                std::cout << "Создайте минимум три вектора для операций.\n";
+            }
+            else {
+                size_t index1, index2, index3;
+                std::cout << "Выберите первый вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index1;
+                std::cout << "Выберите второй вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index2;
+                std::cout << "Выберите третий вектор (1 - " << vectors.size() << "): ";
+                std::cin >> index3;
+
+                if (index1 > 0 && index1 <= vectors.size() && index2 > 0 && index2 <= vectors.size() && index3 > 0 && index3 <= vectors.size()) {
+                    const Vector3D& a = vectors[index1 - 1];
+                    const Vector3D& b = vectors[index2 - 1];
+                    const Vector3D& c = vectors[index3 - 1];
+                    std::cout << "Первый вектор:" << a << "\n";
+                    std::cout << "Второй вектор:" << b << "\n";
+                    std::cout << "Третий вектор:" << c << "\n";
+                    std::cout << "\nСмешанное произведение: " << a.mixedProduct(b, c) << "\n";
+                    std::cout << "Вектора образуют базис? " << (a.canFormBasis(b, c) ? "Да" : "Нет") << "\n";
                 }
                 else {
                     std::cout << "Неверные индексы.\n";
@@ -950,6 +982,136 @@ void ConsoleMenu::TriangleMenu() {
     } while (choice != 0);
 }
 
+void ConsoleMenu::GeometryMenu() {
+    int choice;
+    do {
+        clearConsole();
+        printGeometryHeader();
+        std::cout << "1. Точка и окружность\n";
+        std::cout << "2. Точка и прямая (расстояние)\n";
+        std::cout << "3. Вращение вектора в R2\n";
+        std::cout << "4. Операции с прямой (перенос, поворот, угол)\n";
+        std::cout << "5. Пересечение плоскостей\n";
+        std::cout << "0. Назад\n";
+        std::cout << "==============================\n";
+        std::cout << "Выберите пункт: ";
+        std::cin >> choice;
+
+        switch (choice) {
+        case 1:
+            CirclePointDemo();
+            break;
+        case 2:
+            PointLineDistanceDemo();
+            break;
+        case 3:
+            Vector2DRotationDemo();
+            break;
+        case 4:
+            Line2DOperationsDemo();
+            break;
+        case 5:
+            PlaneIntersectionDemo();
+            break;
+        case 0:
+            break;
+        default:
+            std::cout << "Неверный выбор. Попробуйте снова.\n";
+            pause();
+            break;
+        }
+    } while (choice != 0);
+}
+
+void ConsoleMenu::CirclePointDemo() {
+    clearConsole();
+    Point2D pt;
+    Circle circle;
+    std::cout << "Введите точку: ";
+    std::cin >> pt;
+    std::cout << "Введите окружность (центр и радиус): ";
+    std::cin >> circle;
+    std::cout << "Точка " << (circle.containsPoint(pt) ? "находится внутри" : "находится вне") << " окружности.\n";
+    pause();
+
+    // Пересечение двух окружностей и вложенность
+    Circle c1, c2;
+    std::cout << "\nВведите первую окружность: ";
+    std::cin >> c1;
+    std::cout << "Введите вторую окружность: ";
+    std::cin >> c2;
+    std::cout << (c1.intersects(c2) ? "Окружности пересекаются\n" : "Окружности не пересекаются\n");
+    std::cout << (c1.containsCircle(c2) ? "Вторая окружность вложена в первую\n" : "Вторая окружность не вложена в первую\n");
+    std::cout << (c2.containsCircle(c1) ? "Первая окружность вложена во вторую\n" : "Первая окружность не вложена во вторую\n");
+    pause();
+}
+
+void ConsoleMenu::PointLineDistanceDemo() {
+    clearConsole();
+    Point2D pt, p1, p2;
+    std::cout << "Введите точку: ";
+    std::cin >> pt;
+    std::cout << "Введите первую точку для определения прямой: ";
+    std::cin >> p1;
+    std::cout << "Введите вторую точку для определения прямой: ";
+    std::cin >> p2;
+    Line2D line(p1, p2);
+    std::cout << "Расстояние от точки до прямой: " << line.distanceToPoint(pt) << "\n";
+    pause();
+}
+
+void ConsoleMenu::Vector2DRotationDemo() {
+    clearConsole();
+    Vector2D vec;
+    double angle;
+    std::cout << "Введите вектор: ";
+    std::cin >> vec;
+    std::cout << "Введите угол поворота (в градусах): ";
+    std::cin >> angle;
+    std::cout << "Результат поворота: " << vec.rotate(angle) << "\n";
+    pause();
+}
+
+void ConsoleMenu::Line2DOperationsDemo() {
+    clearConsole();
+    Line2D line;
+    std::cout << "Введите коэффициенты уравнения прямой (Ax + By + C = 0): ";
+    std::cin >> line;
+    double angle;
+    Vector2D dir;
+    std::cout << "Введите вектор (определяет направление и расстояние параллельного переноса): ";
+    std::cin >> dir;
+    line.translate(dir);
+    std::cout << "После переноса: " << line << "\n";
+    std::cout << "Введите угол поворота (в градусах): ";
+    std::cin >> angle;
+    line.rotate(angle);
+    std::cout << "После поворота: " << line << "\n";
+
+    Line2D another;
+    std::cout << "Введите коэффициенты уравнения второй прямой (Ax + By + C = 0): ";
+    std::cin >> another;
+    std::cout << "Угол между прямыми: " << line.angleBetween(another) << " градусов\n";
+    pause();
+}
+
+void ConsoleMenu::PlaneIntersectionDemo() {
+    clearConsole();
+    Plane3D p1, p2;
+    std::cout << "Введите коэффициенты уравнения первой плоскости (Ax + By + Cz + D = 0): ";
+    std::cin >> p1;
+    std::cout << "Введите коэффициенты уравнения второй плоскости (Ax + By + Cz + D = 0): ";
+    std::cin >> p2;
+    if (p1.intersectsWith(p2)) {
+        std::cout << "Плоскости пересекаются. Угол между ними: " << p1.angleWith(p2) << " градусов\n";
+    }
+    else {
+        std::cout << "Плоскости параллельны и не пересекаются.\n";
+    }
+    pause();
+}
+
+
 // Функция для главного меню, которое вызывает все другие меню
 void ConsoleMenu::MainMenu() {
     int choice;
@@ -961,6 +1123,7 @@ void ConsoleMenu::MainMenu() {
         std::cout << "3. Меню матриц\n";
         std::cout << "4. Меню многочленов\n";
         std::cout << "5. Меню треугольников\n";
+        std::cout << "6. Меню классы 2 (блок 4)\n";
         std::cout << "0. Выход\n";
         std::cout << "Ваш выбор: ";
         std::cin >> choice;
@@ -980,6 +1143,9 @@ void ConsoleMenu::MainMenu() {
             break;
         case 5:
             ConsoleMenu::TriangleMenu();
+            break;
+        case 6:
+            ConsoleMenu::GeometryMenu();
             break;
         case 0:
             std::cout << "Выход из программы...\n";

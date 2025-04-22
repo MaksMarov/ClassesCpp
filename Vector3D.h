@@ -34,6 +34,12 @@ public:
     // Векторное произведение
     Vector3D cross(const Vector3D& other) const; // Векторное произведение двух векторов
 
+    // Метод для вычисления смешанного произведения (объем параллелепипеда)
+    double mixedProduct(const Vector3D& b, const Vector3D& c) const;
+
+    // Метод для проверки, могут ли три вектора образовывать базис
+    bool canFormBasis(const Vector3D& b, const Vector3D& c) const;
+
     // Длина вектора
     double length() const; // Вычисление длины вектора
 
