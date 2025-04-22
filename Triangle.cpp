@@ -1,50 +1,66 @@
 #include "Triangle.h"
 #include <algorithm>
+#include <cmath>
+#include <stdexcept>
+#include <iostream>
+#include <vector>
 
 constexpr double EPSILON = 1e-9; // Точность для сравнений с плавающей точкой
 
-// Конструктор по умолчанию, создаёт треугольник с заданными вершинами
+// ========================= КОНСТРУКТОРЫ =========================
+
+// Конструктор по умолчанию: создаёт треугольник с вершинами (0,0), (1,0), (0,1)
 Triangle::Triangle() {
-    vertices = { { {0, 0}, {1, 0}, {0, 1} } }; // Создаём треугольник с вершинами в (0,0), (1,0), (0,1)
+    vertices = { { {0, 0}, {1, 0}, {0, 1} } };
 }
 
 // Конструктор с параметрами, задающими три вершины треугольника
 Triangle::Triangle(const std::pair<double, double>& p1,
     const std::pair<double, double>& p2,
     const std::pair<double, double>& p3) {
+    if (p1 == p2 || p2 == p3 || p3 == p1) {
+        throw std::invalid_argument("Vertices must be distinct points.");
+    }
     vertices = { p1, p2, p3 };
 }
 
-// Метод для получения вершины по индексу
+// ========================= ГЕТТЕРЫ =========================
+
+// Получить вершину по индексу (0, 1 или 2)
 std::pair<double, double> Triangle::getVertex(int index) const {
     if (index < 0 || index > 2) throw std::out_of_range("Vertex index out of range.");
     return vertices[index];
 }
 
-// Метод для получения всех трёх вершин
+// Получить все вершины треугольника
 std::array<std::pair<double, double>, 3> Triangle::getVertices() const {
     return vertices;
 }
 
-// Вспомогательный метод для вычисления расстояния между двумя точками
+// ========================= ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ =========================
+
+// Расстояние между двумя точками
 double Triangle::distance(const std::pair<double, double>& a, const std::pair<double, double>& b) const {
-    return std::hypot(b.first - a.first, b.second - a.second); // Используется std::hypot для вычисления гипотенузы
+    return std::hypot(b.first - a.first, b.second - a.second);
 }
 
-// Метод для вычисления площади треугольника по формуле Герона
+// Площадь по формуле Герона (используется как альтернатива)
 double Triangle::areaHeron(double a, double b, double c) const {
     double s = (a + b + c) / 2;  // Полупериметр
-    return std::sqrt(std::max(s * (s - a) * (s - b) * (s - c), 0.0)); // Геронова формула
+    return std::sqrt(std::max(s * (s - a) * (s - b) * (s - c), 0.0));
 }
 
-// Метод для вычисления периметра треугольника
+// ========================= ГЕОМЕТРИЧЕСКИЕ СВОЙСТВА =========================
+
+// Периметр треугольника
 double Triangle::perimeter() const {
     return distance(vertices[0], vertices[1]) +
         distance(vertices[1], vertices[2]) +
         distance(vertices[2], vertices[0]);
 }
 
-// Метод для вычисления площади треугольника
+// Площадь треугольника по формуле площади через координаты
+// Формула: 1/2 * |(x1(y2-y3) + x2(y3-y1) + x3(y1-y2))|
 double Triangle::area() const {
     return std::abs(
         (vertices[0].first * (vertices[1].second - vertices[2].second) +
@@ -69,7 +85,7 @@ bool Triangle::isIsosceles() const {
     return std::abs(a - b) < EPSILON || std::abs(b - c) < EPSILON || std::abs(c - a) < EPSILON;
 }
 
-// Проверка на прямоугольный треугольник
+// Проверка на прямоугольный треугольник по теореме Пифагора
 bool Triangle::isRight() const {
     double a2 = std::pow(distance(vertices[0], vertices[1]), 2);
     double b2 = std::pow(distance(vertices[1], vertices[2]), 2);
@@ -79,12 +95,12 @@ bool Triangle::isRight() const {
         std::abs(c2 + a2 - b2) < EPSILON;
 }
 
-// Оператор равенства: два треугольника считаются равными, если их площади равны
+// Оператор сравнения: равны, если площади совпадают (с точностью до EPSILON)
 bool Triangle::operator==(const Triangle& other) const {
     return std::abs(this->area() - other.area()) < EPSILON;
 }
 
-// Проверка на подобие треугольников: если стороны пропорциональны
+// Проверка на подобие: если стороны пропорциональны (после сортировки)
 bool Triangle::isSimilarTo(const Triangle& other) const {
     std::array<double, 3> thisSides = {
         distance(vertices[0], vertices[1]),
@@ -101,6 +117,10 @@ bool Triangle::isSimilarTo(const Triangle& other) const {
     std::sort(thisSides.begin(), thisSides.end());
     std::sort(otherSides.begin(), otherSides.end());
 
+    if (std::any_of(otherSides.begin(), otherSides.end(), [](double side) { return side < EPSILON; })) {
+        throw std::domain_error("Degenerate triangle in isSimilarTo.");
+    }
+
     double ratio = thisSides[0] / otherSides[0];
     for (int i = 1; i < 3; ++i) {
         if (std::abs(thisSides[i] / otherSides[i] - ratio) > EPSILON) {
@@ -110,7 +130,7 @@ bool Triangle::isSimilarTo(const Triangle& other) const {
     return true;
 }
 
-// Проверка, содержит ли треугольник точку
+// Проверка: содержит ли треугольник точку (метод знаков площадей)
 bool Triangle::containsPoint(const std::pair<double, double>& point) const {
     auto sign = [](const std::pair<double, double>& p1,
         const std::pair<double, double>& p2,
@@ -126,7 +146,7 @@ bool Triangle::containsPoint(const std::pair<double, double>& point) const {
     return (b1 == b2) && (b2 == b3);
 }
 
-// Проверка, содержит ли треугольник другой треугольник (по методу containsPoint)
+// Проверка: содержит ли треугольник другой треугольник
 bool Triangle::containsTriangle(const Triangle& other) const {
     for (const auto& v : other.getVertices()) {
         if (!containsPoint(v)) {
@@ -136,7 +156,9 @@ bool Triangle::containsTriangle(const Triangle& other) const {
     return true;
 }
 
-// Сдвиг треугольника
+// ========================= ТРАНСФОРМАЦИИ =========================
+
+// Сдвиг треугольника на dx, dy
 void Triangle::translate(double dx, double dy) {
     for (auto& vertex : vertices) {
         vertex.first += dx;
@@ -144,40 +166,52 @@ void Triangle::translate(double dx, double dy) {
     }
 }
 
-// Поворот треугольника относительно центра
+// Поворот треугольника вокруг заданного центра на заданный угол (в градусах)
 void Triangle::rotate(double angleDegrees, const std::pair<double, double>& center) {
-    double angleRadians = angleDegrees * 3.1415 / 180.0;
+    double angleRadians = angleDegrees * 3.14159265358979323846 / 180.0;
     for (auto& vertex : vertices) {
-        double xNew = center.first + (vertex.first - center.first) * cos(angleRadians) - (vertex.second - center.second) * sin(angleRadians);
-        double yNew = center.second + (vertex.first - center.first) * sin(angleRadians) + (vertex.second - center.second) * cos(angleRadians);
-        vertex.first = xNew;
-        vertex.second = yNew;
+        double x = vertex.first - center.first;
+        double y = vertex.second - center.second;
+        double xNew = x * cos(angleRadians) - y * sin(angleRadians);
+        double yNew = x * sin(angleRadians) + y * cos(angleRadians);
+        vertex.first = center.first + xNew;
+        vertex.second = center.second + yNew;
     }
 }
 
-// Масштабирование треугольника относительно центра
+// Масштабирование треугольника относительно заданного центра
 void Triangle::scale(double factor, const std::pair<double, double>& center) {
+    if (factor == 0.0) {
+        throw std::invalid_argument("Scaling factor cannot be zero.");
+    }
     for (auto& vertex : vertices) {
         vertex.first = center.first + factor * (vertex.first - center.first);
         vertex.second = center.second + factor * (vertex.second - center.second);
     }
 }
 
-// Оператор вывода: выводит вершины треугольника
+// ========================= ОПЕРАТОРЫ ВВОДА/ВЫВОДА =========================
+
 std::ostream& operator<<(std::ostream& os, const Triangle& tri) {
-    os << "Vertices of Triangle: ";
-    for (const auto& vertex : tri.getVertices()) {
-        os << "(" << vertex.first << ", " << vertex.second << ") ";
-    }
+    const auto& v = tri.getVertices();
+    os << "Треугольник:\n";
+    os << "  A: (" << v[0].first << ", " << v[0].second << ")\n";
+    os << "  B: (" << v[1].first << ", " << v[1].second << ")\n";
+    os << "  C: (" << v[2].first << ", " << v[2].second << ")\n";
     return os;
 }
 
-// Оператор ввода: вводит вершины треугольника
 std::istream& operator>>(std::istream& is, Triangle& tri) {
-    std::cout << "Enter coordinates of the 3 vertices of the triangle:" << std::endl;
-    for (auto& vertex : tri.vertices) {
-        std::cout << "Enter x and y: ";
-        is >> vertex.first >> vertex.second;
+    std::vector<std::pair<double, double>> tempVertices(3);
+    std::cout << "Введите координаты вершин (x,y для каждой):\n";
+
+    for (int i = 0; i < 3; ++i) {
+        std::cout << "  Вершина " << static_cast<char>('A' + i) << ": ";
+        if (!(is >> tempVertices[i].first >> tempVertices[i].second)) {
+            throw std::runtime_error("Invalid input: expected two numeric values per vertex.");
+        }
     }
+
+    tri = Triangle(tempVertices[0], tempVertices[1], tempVertices[2]);  // Используем безопасный конструктор (может тоже бросить исключение)
     return is;
 }

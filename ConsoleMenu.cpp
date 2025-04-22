@@ -342,7 +342,9 @@ void ConsoleMenu::MatrixMenu() {
         std::cout << "2. Показать все матрицы\n";
         std::cout << "3. Демонстрация операций между двумя матрицами\n";
         std::cout << "4. Демонстрация операций с числом\n";
-        std::cout << "5. Транспонирование матрицы\n";
+        std::cout << "5. Транспонирование матрицы и вычисление её определителя и обратной матрицы\n";
+        std::cout << "6. Проверка свойств матрицы\n";
+        std::cout << "7. Сравнение матриц на равенство и неравенство\n";
         std::cout << "0. Назад\n";
         std::cout << "==============================\n";
         std::cout << "Выберите пункт: ";
@@ -381,7 +383,7 @@ void ConsoleMenu::MatrixMenu() {
             else {
                 std::cout << "Список матриц:\n";
                 for (size_t i = 0; i < matrices.size(); ++i) {
-                    std::cout << i + 1 << ". " << matrices[i] << "\n";
+                    std::cout << i + 1 << ". " << "\n" << matrices[i] << "\n";
                 }
             }
             pause();
@@ -393,18 +395,23 @@ void ConsoleMenu::MatrixMenu() {
                 std::cout << "Создайте минимум две матрицы для операций.\n";
             }
             else {
-                size_t i1, i2;
-                std::cout << "Выберите индекс первой матрицы: ";
-                std::cin >> i1;
-                std::cout << "Выберите индекс второй матрицы: ";
-                std::cin >> i2;
+                size_t index1, index2;
+                std::cout << "Выберите первую матрицу (1 - " << matrices.size() << "): ";
+                std::cin >> index1;
+                std::cout << "Выберите вторую матрицу(1 - " << matrices.size() << "): ";
+                std::cin >> index2;
 
-                if (i1 < matrices.size() && i2 < matrices.size()) {
-                    const Matrix& a = matrices[i1];
-                    const Matrix& b = matrices[i2];
-                    std::cout << "\n" << a << " + " << b << " = " << (a + b) << "\n";
-                    std::cout << a << " - " << b << " = " << (a - b) << "\n";
-                    std::cout << a << " * " << b << " = " << (a * b) << "\n";
+                if (index1 > 0 && index1 <= matrices.size() && index2 > 0 && index2 <= matrices.size()) {
+                    const Matrix& a = matrices[index1 - 1];
+                    const Matrix& b = matrices[index2 - 1];
+                    std::cout << "Первая матрица:" << "\n" << a << "\n";
+                    std::cout << "Вторая матрица:" << "\n" << b << "\n";
+                    std::cout << "Сложение:" << "\n";
+                    std::cout << a << " + " << "\n" << b << " = " << "\n" << (a + b) << "\n";
+                    std::cout << "Вычитание:" << "\n";
+                    std::cout << a << " - " << "\n" << b << " = " << "\n" << (a - b) << "\n";
+                    std::cout << "Умножение:" << "\n";
+                    std::cout << a << " * " << "\n" << b << " = " << "\n" << (a * b) << "\n";
                 }
                 else {
                     std::cout << "Неверные индексы.\n";
@@ -419,16 +426,18 @@ void ConsoleMenu::MatrixMenu() {
                 std::cout << "Нет матриц.\n";
             }
             else {
-                size_t idx;
+                size_t index;
                 double scalar;
-                std::cout << "Выберите индекс матрицы: ";
-                std::cin >> idx;
+                std::cout << "Выберите матрицу (1 - " << matrices.size() << "): ";
+                std::cin >> index;
                 std::cout << "Введите скаляр: ";
                 std::cin >> scalar;
 
-                if (idx < matrices.size()) {
-                    const Matrix& m = matrices[idx];
-                    std::cout << "\n" << m << " * " << scalar << " = " << (m * scalar) << "\n";
+                if (index > 0 && index <= matrices.size()) {
+                    const Matrix& m = matrices[index - 1];
+                    std::cout << "Матрица:" << "\n" << m << "\n";
+                    std::cout << "Скаляр:" << scalar << "\n";
+                    std::cout << "\n" << m << " * " << scalar << " = " << "\n" << (m * scalar) << "\n";
                 }
                 else {
                     std::cout << "Неверный индекс.\n";
@@ -437,20 +446,92 @@ void ConsoleMenu::MatrixMenu() {
             pause();
             break;
         }
-        case 5: {  // Транспонирование матрицы
+        case 5: {  // Транспонирование матрицы и вычисление её определителя и обратной матрицы
             clearConsole();
             if (matrices.empty()) {
                 std::cout << "Нет матриц.\n";
             }
             else {
-                size_t idx;
-                std::cout << "Выберите индекс матрицы: ";
-                std::cin >> idx;
-                if (idx < matrices.size()) {
-                    std::cout << "Результат транспонирования:\n" << matrices[idx].transpose() << "\n";
+                size_t index;
+                std::cout << "Выберите матрицу (1 - " << matrices.size() << "): ";
+                std::cin >> index;
+                if (index > 0 && index <= matrices.size()) {
+                    const Matrix& m = matrices[index - 1];
+                    std::cout << "Матрица:" << "\n" << m << "\n";
+                    std::cout << "Результат транспонирования:\n" << m.transpose() << "\n";
+                    std::cout << "Определитель матрицы: " << m.determinant() << "\n";
+
+                    try {
+                        std::cout << "Обратная матрица:\n" << m.inverse() << "\n";
+                        std::cout << "Произведение исходной и обратной = " << "\n" << (m * m.inverse()) << "\n";
+
+                    }
+                    catch (const std::invalid_argument& e) {
+                        std::cout << "Ошибка: " << e.what() << "\n";
+                    }
                 }
                 else {
                     std::cout << "Неверный индекс.\n";
+                }
+            }
+            pause();
+            break;
+        }
+        case 6: {  // Проверка свойств матрицы
+            clearConsole();
+            if (matrices.empty()) {
+                std::cout << "Нет матриц.\n";
+            }
+            else {
+                size_t index;
+                std::cout << "Выберите матрицу (1 - " << matrices.size() << "): ";
+                std::cin >> index;
+
+                if (index > 0 && index <= matrices.size()) {
+                    const Matrix& m = matrices[index - 1];
+                    std::cout << "Матрица:" << "\n" << m << "\n";
+                    std::cout << "Является ли матрица квадратной? " << (m.isSquare() ? "Да" : "Нет") << "\n";
+                    std::cout << "Является ли матрица диагональной? " << (m.isDiagonal() ? "Да" : "Нет") << "\n";
+                    std::cout << "Является ли матрица единичной? " << (m.isIdentity() ? "Да" : "Нет") << "\n";
+                    std::cout << "Является ли матрица нулевой? " << (m.isZero() ? "Да" : "Нет") << "\n";
+                    std::cout << "Является ли матрица симметричной? " << (m.isSymmetric() ? "Да" : "Нет") << "\n";
+                    std::cout << "Является ли матрица верхнетреугольной? " << (m.isUpperTriangular() ? "Да" : "Нет") << "\n";
+                    std::cout << "Является ли матрица нижнетреугольной? " << (m.isLowerTriangular() ? "Да" : "Нет") << "\n";
+                }
+                else {
+                    std::cout << "Неверный индекс.\n";
+                }
+            }
+            pause();
+            break;
+        }
+        case 7: {  // Сравнение матриц на равенство и неравенство
+            clearConsole();
+            if (matrices.size() < 2) {
+                std::cout << "Создайте минимум две матрицы для сравнения.\n";
+            }
+            else {
+                size_t index1, index2;
+                std::cout << "Выберите первую матрицу (1 - " << matrices.size() << "): ";
+                std::cin >> index1;
+                std::cout << "Выберите вторую матрицу(1 - " << matrices.size() << "): ";
+                std::cin >> index2;
+
+                if (index1 > 0 && index1 <= matrices.size() && index2 > 0 && index2 <= matrices.size()) {
+                    const Matrix& a = matrices[index1 - 1];
+                    const Matrix& b = matrices[index2 - 1];
+                    std::cout << "Первая матрица:" << "\n" << a << "\n";
+                    std::cout << "Вторая матрица:" << "\n" << b << "\n";
+
+                    if (a == b) {
+                        std::cout << "Матрицы равны.\n";
+                    }
+                    else {
+                        std::cout << "Матрицы не равны.\n";
+                    }
+                }
+                else {
+                    std::cout << "Неверные индексы.\n";
                 }
             }
             pause();
@@ -479,6 +560,7 @@ void ConsoleMenu::PolynomialMenu() {
         std::cout << "4. Демонстрация операций с числом\n";
         std::cout << "5. Производная полинома\n";
         std::cout << "6. Интеграл полинома\n";
+        std::cout << "7. Вычисление значения полинома для заданного аргумента\n";  // Новый пункт
         std::cout << "0. Назад\n";
         std::cout << "==============================\n";
         std::cout << "Выберите пункт: ";
@@ -494,7 +576,8 @@ void ConsoleMenu::PolynomialMenu() {
         case 1: {  // Создать новый полином
             clearConsole();
             Polynomial p;
-            std::cin >> p;  // Ввод полинома через перегрузку оператора >>
+            std::cin >> p;  // Используем перегрузку оператора >> для ввода полинома
+
             polynomials.push_back(p);
             std::cout << "Полином создан!\n";
             pause();
@@ -520,18 +603,20 @@ void ConsoleMenu::PolynomialMenu() {
                 std::cout << "Создайте минимум два полинома для операций.\n";
             }
             else {
-                size_t i1, i2;
-                std::cout << "Выберите индекс первого полинома: ";
-                std::cin >> i1;
-                std::cout << "Выберите индекс второго полинома: ";
-                std::cin >> i2;
+                size_t index1, index2;
+                std::cout << "Выберите первый полином (1 - " << polynomials.size() << "): ";
+                std::cin >> index1;
+                std::cout << "Выберите второй полином (1 - " << polynomials.size() << "): ";
+                std::cin >> index2;
 
-                if (i1 < polynomials.size() && i2 < polynomials.size()) {
-                    const Polynomial& a = polynomials[i1];
-                    const Polynomial& b = polynomials[i2];
-                    std::cout << "\n" << a << " + " << b << " = " << (a + b) << "\n";
-                    std::cout << a << " - " << b << " = " << (a - b) << "\n";
-                    std::cout << a << " * " << b << " = " << (a * b) << "\n";
+                if (index1 > 0 && index1 <= polynomials.size() && index2 > 0 && index2 <= polynomials.size()) {
+                    const Polynomial& a = polynomials[index1 - 1];
+                    const Polynomial& b = polynomials[index2 - 1];
+                    std::cout << "Первый полином:\n" << a << "\n";
+                    std::cout << "Второй полином:\n" << b << "\n";
+                    std::cout << "Сложение:\n" << a << " + " << b << " = " << (a + b) << "\n";
+                    std::cout << "Вычитание:\n" << a << " - " << b << " = " << (a - b) << "\n";
+                    std::cout << "Умножение:\n" << a << " * " << b << " = " << (a * b) << "\n";
                 }
                 else {
                     std::cout << "Неверные индексы.\n";
@@ -546,17 +631,18 @@ void ConsoleMenu::PolynomialMenu() {
                 std::cout << "Нет полиномов.\n";
             }
             else {
-                size_t idx;
+                size_t index;
                 double scalar;
-                std::cout << "Выберите индекс полинома: ";
-                std::cin >> idx;
+                std::cout << "Выберите полином (1 - " << polynomials.size() << "): ";
+                std::cin >> index;
                 std::cout << "Введите скаляр: ";
                 std::cin >> scalar;
 
-                if (idx < polynomials.size()) {
-                    const Polynomial& p = polynomials[idx];
-                    std::cout << "\n" << p << " * " << scalar << " = " << (p * scalar) << "\n";
-                    std::cout << p << " + " << scalar << " = " << (p + scalar) << "\n";
+                if (index > 0 && index <= polynomials.size()) {
+                    const Polynomial& p = polynomials[index - 1];
+                    std::cout << "Полином:\n" << p << "\n";
+                    std::cout << "Скаляр: " << scalar << "\n";
+                    std::cout << p << " * " << scalar << " = " << (p * scalar) << "\n";
                 }
                 else {
                     std::cout << "Неверный индекс.\n";
@@ -571,11 +657,12 @@ void ConsoleMenu::PolynomialMenu() {
                 std::cout << "Нет полиномов.\n";
             }
             else {
-                size_t idx;
-                std::cout << "Выберите индекс полинома: ";
-                std::cin >> idx;
-                if (idx < polynomials.size()) {
-                    std::cout << "Производная полинома:\n" << polynomials[idx].derivative() << "\n";
+                size_t index;
+                std::cout << "Выберите полином (1 - " << polynomials.size() << "): ";
+                std::cin >> index;
+                if (index > 0 && index <= polynomials.size()) {
+                    const Polynomial& p = polynomials[index - 1];
+                    std::cout << "Производная полинома:\n" << p.derivative() << "\n";
                 }
                 else {
                     std::cout << "Неверный индекс.\n";
@@ -590,11 +677,37 @@ void ConsoleMenu::PolynomialMenu() {
                 std::cout << "Нет полиномов.\n";
             }
             else {
-                size_t idx;
-                std::cout << "Выберите индекс полинома: ";
-                std::cin >> idx;
-                if (idx < polynomials.size()) {
-                    std::cout << "Интеграл полинома:\n" << polynomials[idx].integrate() << "\n";
+                size_t index;
+                std::cout << "Выберите полином (1 - " << polynomials.size() << "): ";
+                std::cin >> index;
+                if (index > 0 && index <= polynomials.size()) {
+                    const Polynomial& p = polynomials[index - 1];
+                    std::cout << "Интеграл полинома:\n" << p.integrate() << "\n";
+                }
+                else {
+                    std::cout << "Неверный индекс.\n";
+                }
+            }
+            pause();
+            break;
+        }
+        case 7: {  // Вычисление значения полинома для заданного аргумента
+            clearConsole();
+            if (polynomials.empty()) {
+                std::cout << "Нет полиномов.\n";
+            }
+            else {
+                size_t index;
+                double arg;
+                std::cout << "Выберите полином (1 - " << polynomials.size() << "): ";
+                std::cin >> index;
+                std::cout << "Введите значение аргумента: ";
+                std::cin >> arg;
+
+                if (index > 0 && index <= polynomials.size()) {
+                    const Polynomial& p = polynomials[index - 1];
+                    double result = p.evaluate(arg);
+                    std::cout << "Значение полинома " << p << " при x = " << arg << " равно " << result << "\n";
                 }
                 else {
                     std::cout << "Неверный индекс.\n";
@@ -614,8 +727,8 @@ void ConsoleMenu::PolynomialMenu() {
 }
 
 void ConsoleMenu::TriangleMenu() {
-    std::vector<Triangle> triangles;  // Вектор для хранения треугольников
-    int choice;  // Переменная для выбора пункта меню
+    std::vector<Triangle> triangles;  // Vector to store triangles
+    int choice;  // Variable for menu selection
 
     do {
         clearConsole();
@@ -624,15 +737,10 @@ void ConsoleMenu::TriangleMenu() {
         std::cout << "2. Показать все треугольники\n";
         std::cout << "3. Расчёт периметра треугольника\n";
         std::cout << "4. Расчёт площади треугольника\n";
-        std::cout << "5. Проверка на равносторонний треугольник\n";
-        std::cout << "6. Проверка на равнобедренный треугольник\n";
-        std::cout << "7. Проверка на прямоугольный треугольник\n";
-        std::cout << "8. Проверка на равенство треугольников\n";
-        std::cout << "9. Проверка на подобие треугольников\n";
-        std::cout << "10. Проверка, содержит ли треугольник точку\n";
-        std::cout << "11. Сдвиг треугольника\n";
-        std::cout << "12. Поворот треугольника\n";
-        std::cout << "13. Масштабирование треугольника\n";
+        std::cout << "5. Проверка типа треугольника\n";
+        std::cout << "6. Проверка на подобие треугольников\n";
+        std::cout << "7. Треугольник с максимальной площадью\n";
+        std::cout << "8. Сдвиг треугольника\n";
         std::cout << "0. Назад\n";
         std::cout << "==============================\n";
         std::cout << "Выберите пункт: ";
@@ -645,23 +753,16 @@ void ConsoleMenu::TriangleMenu() {
         }
 
         switch (choice) {
-        case 1: {  // Создать новый треугольник
+        case 1: {  // Create a new triangle
             clearConsole();
-            std::pair<double, double> p1, p2, p3;
-            std::cout << "Введите координаты первой вершины (x1 y1): ";
-            std::cin >> p1.first >> p1.second;
-            std::cout << "Введите координаты второй вершины (x2 y2): ";
-            std::cin >> p2.first >> p2.second;
-            std::cout << "Введите координаты третьей вершины (x3 y3): ";
-            std::cin >> p3.first >> p3.second;
-
-            Triangle t(p1, p2, p3);
+            Triangle t;
+            std::cin >> t;
             triangles.push_back(t);
             std::cout << "Треугольник создан!\n";
             pause();
             break;
         }
-        case 2: {  // Показать все треугольники
+        case 2: {  // Show all triangles
             clearConsole();
             if (triangles.empty()) {
                 std::cout << "Нет созданных треугольников.\n";
@@ -669,23 +770,25 @@ void ConsoleMenu::TriangleMenu() {
             else {
                 std::cout << "Список треугольников:\n";
                 for (size_t i = 0; i < triangles.size(); ++i) {
-                    std::cout << i + 1 << ". " << triangles[i] << "\n";
+                    std::cout << i + 1 << ". Треугольник " << i + 1 << ": " << triangles[i] << "\n";
                 }
             }
             pause();
             break;
         }
-        case 3: {  // Расчёт периметра
+        case 3: {  // Calculate perimeter
             clearConsole();
             if (triangles.empty()) {
                 std::cout << "Нет треугольников.\n";
             }
             else {
                 size_t idx;
-                std::cout << "Выберите индекс треугольника: ";
+                std::cout << "Выберите треугольник (1 - " << triangles.size() << "): ";
                 std::cin >> idx;
-                if (idx < triangles.size()) {
-                    std::cout << "Периметр: " << triangles[idx].perimeter() << "\n";
+                if (idx > 0 && idx <= triangles.size()) {
+                    Triangle t = triangles[idx - 1];
+                    std::cout << t << "\n";
+                    std::cout << "Периметр: " << t.perimeter() << "\n";
                 }
                 else {
                     std::cout << "Неверный индекс.\n";
@@ -694,17 +797,19 @@ void ConsoleMenu::TriangleMenu() {
             pause();
             break;
         }
-        case 4: {  // Расчёт площади
+        case 4: {  // Calculate area
             clearConsole();
             if (triangles.empty()) {
                 std::cout << "Нет треугольников.\n";
             }
             else {
                 size_t idx;
-                std::cout << "Выберите индекс треугольника: ";
+                std::cout << "Выберите треугольник (1 - " << triangles.size() << "): ";
                 std::cin >> idx;
-                if (idx < triangles.size()) {
-                    std::cout << "Площадь: " << triangles[idx].area() << "\n";
+                if (idx > 0 && idx <= triangles.size()) {
+                    Triangle t = triangles[idx - 1];
+                    std::cout << t << "\n";
+                    std::cout << "Площадь: " << t.area() << "\n";
                 }
                 else {
                     std::cout << "Неверный индекс.\n";
@@ -713,65 +818,31 @@ void ConsoleMenu::TriangleMenu() {
             pause();
             break;
         }
-        case 5: {  // Проверка на равносторонний треугольник
+        case 5: {  // Check triangle type
             clearConsole();
             if (triangles.empty()) {
                 std::cout << "Нет треугольников.\n";
             }
             else {
                 size_t idx;
-                std::cout << "Выберите индекс треугольника: ";
+                std::cout << "Выберите треугольник (1 - " << triangles.size() << "): ";
                 std::cin >> idx;
-                if (idx < triangles.size()) {
-                    if (triangles[idx].isEquilateral()) {
+                if (idx > 0 && idx <= triangles.size()) {
+                    Triangle t = triangles[idx - 1];
+                    std::cout << t << "\n";
+                    if (t.isEquilateral()) {
                         std::cout << "Это равносторонний треугольник.\n";
                     }
                     else {
                         std::cout << "Это не равносторонний треугольник.\n";
                     }
-                }
-                else {
-                    std::cout << "Неверный индекс.\n";
-                }
-            }
-            pause();
-            break;
-        }
-        case 6: {  // Проверка на равнобедренный треугольник
-            clearConsole();
-            if (triangles.empty()) {
-                std::cout << "Нет треугольников.\n";
-            }
-            else {
-                size_t idx;
-                std::cout << "Выберите индекс треугольника: ";
-                std::cin >> idx;
-                if (idx < triangles.size()) {
-                    if (triangles[idx].isIsosceles()) {
+                    if (t.isIsosceles()) {
                         std::cout << "Это равнобедренный треугольник.\n";
                     }
                     else {
                         std::cout << "Это не равнобедренный треугольник.\n";
                     }
-                }
-                else {
-                    std::cout << "Неверный индекс.\n";
-                }
-            }
-            pause();
-            break;
-        }
-        case 7: {  // Проверка на прямоугольный треугольник
-            clearConsole();
-            if (triangles.empty()) {
-                std::cout << "Нет треугольников.\n";
-            }
-            else {
-                size_t idx;
-                std::cout << "Выберите индекс треугольника: ";
-                std::cin >> idx;
-                if (idx < triangles.size()) {
-                    if (triangles[idx].isRight()) {
+                    if (t.isRight()) {
                         std::cout << "Это прямоугольный треугольник.\n";
                     }
                     else {
@@ -785,41 +856,23 @@ void ConsoleMenu::TriangleMenu() {
             pause();
             break;
         }
-        case 8: {  // Проверка на равенство треугольников
+        case 6: {  // Check for similarity of triangles
             clearConsole();
             if (triangles.empty()) {
                 std::cout << "Нет треугольников.\n";
             }
             else {
                 size_t idx1, idx2;
-                std::cout << "Выберите индексы двух треугольников для сравнения: ";
-                std::cin >> idx1 >> idx2;
-                if (idx1 < triangles.size() && idx2 < triangles.size()) {
-                    if (triangles[idx1] == triangles[idx2]) {
-                        std::cout << "Треугольники равны по площади.\n";
-                    }
-                    else {
-                        std::cout << "Треугольники не равны.\n";
-                    }
-                }
-                else {
-                    std::cout << "Неверные индексы.\n";
-                }
-            }
-            pause();
-            break;
-        }
-        case 9: {  // Проверка на подобие
-            clearConsole();
-            if (triangles.empty()) {
-                std::cout << "Нет треугольников.\n";
-            }
-            else {
-                size_t idx1, idx2;
-                std::cout << "Выберите индексы двух треугольников для проверки на подобие: ";
-                std::cin >> idx1 >> idx2;
-                if (idx1 < triangles.size() && idx2 < triangles.size()) {
-                    if (triangles[idx1].isSimilarTo(triangles[idx2])) {
+                std::cout << "Выберите первый треугольник (1 - " << triangles.size() << "): ";
+                std::cin >> idx1;
+                std::cout << "Выберите второй треугольник (1 - " << triangles.size() << "): ";
+                std::cin >> idx2;
+                if (idx1 > 0 && idx1 <= triangles.size() && idx2 > 0 && idx2 <= triangles.size()) {
+                    Triangle t1 = triangles[idx1 - 1];
+                    Triangle t2 = triangles[idx2 - 1];
+                    std::cout << t1 << "\n";
+                    std::cout << t2 << "\n";
+                    if (t1.isSimilarTo(t2)) {
                         std::cout << "Треугольники подобны.\n";
                     }
                     else {
@@ -833,49 +886,49 @@ void ConsoleMenu::TriangleMenu() {
             pause();
             break;
         }
-        case 10: {  // Проверка, содержит ли треугольник точку
+        case 7: {
             clearConsole();
             if (triangles.empty()) {
                 std::cout << "Нет треугольников.\n";
             }
             else {
-                size_t idx;
-                std::pair<double, double> point;
-                std::cout << "Выберите индекс треугольника: ";
-                std::cin >> idx;
-                std::cout << "Введите координаты точки (x y): ";
-                std::cin >> point.first >> point.second;
+                size_t maxIndex = 0;
+                double maxArea = triangles[0].area();
 
-                if (idx < triangles.size()) {
-                    if (triangles[idx].containsPoint(point)) {
-                        std::cout << "Треугольник содержит эту точку.\n";
-                    }
-                    else {
-                        std::cout << "Треугольник не содержит эту точку.\n";
+                for (size_t i = 1; i < triangles.size(); ++i) {
+                    double area = triangles[i].area();
+                    if (area > maxArea) {
+                        maxArea = area;
+                        maxIndex = i;
                     }
                 }
-                else {
-                    std::cout << "Неверный индекс.\n";
+
+                std::cout << "Треугольник с наибольшей площадью:\n";
+                std::cout << maxIndex + 1 << ". " << triangles[maxIndex] << " — Площадь: " << maxArea << "\n\n";
+                std::cout << "Площади всех треугольников:\n";
+                for (size_t i = 0; i < triangles.size(); ++i) {
+                    std::cout << i + 1 << ". " << triangles[i] << " — Площадь: " << triangles[i].area() << "\n";
                 }
             }
             pause();
             break;
         }
-        case 11: {  // Сдвиг треугольника
+        case 8: {  // Translate triangle
             clearConsole();
             if (triangles.empty()) {
                 std::cout << "Нет треугольников.\n";
             }
             else {
                 size_t idx;
-                double dx, dy;
-                std::cout << "Выберите индекс треугольника: ";
+                std::pair<double, double> shift;
+                std::cout << "Выберите треугольник (1 - " << triangles.size() << "): ";
                 std::cin >> idx;
-                std::cout << "Введите сдвиг по X и Y: ";
-                std::cin >> dx >> dy;
-
-                if (idx < triangles.size()) {
-                    triangles[idx].translate(dx, dy);
+                if (idx > 0 && idx <= triangles.size()) {
+                    Triangle t = triangles[idx - 1];
+                    std::cout << t << "\n";
+                    std::cout << "Введите сдвиг по осям (dx dy): ";
+                    std::cin >> shift.first >> shift.second;
+                    t.translate(shift.first, shift.second);
                     std::cout << "Треугольник сдвинут.\n";
                 }
                 else {
@@ -885,64 +938,14 @@ void ConsoleMenu::TriangleMenu() {
             pause();
             break;
         }
-        case 12: {  // Поворот треугольника
-            clearConsole();
-            if (triangles.empty()) {
-                std::cout << "Нет треугольников.\n";
-            }
-            else {
-                size_t idx;
-                double angle;
-                std::pair<double, double> center;
-                std::cout << "Выберите индекс треугольника: ";
-                std::cin >> idx;
-                std::cout << "Введите угол поворота и точку вращения (x, y): ";
-                std::cin >> angle >> center.first >> center.second;
-
-                if (idx < triangles.size()) {
-                    triangles[idx].rotate(angle, center);
-                    std::cout << "Треугольник повёрнут.\n";
-                }
-                else {
-                    std::cout << "Неверный индекс.\n";
-                }
-            }
+        case 0: {
+            break;
+        }
+        default: {
+            std::cout << "Неверный выбор. Попробуйте снова.\n";
             pause();
             break;
         }
-        case 13: {  // Масштабирование треугольника
-            clearConsole();
-            if (triangles.empty()) {
-                std::cout << "Нет треугольников.\n";
-            }
-            else {
-                size_t idx;
-                double scale;
-                std::pair<double, double> center;
-                std::cout << "Выберите индекс треугольника: ";
-                std::cin >> idx;
-                std::cout << "Введите угол поворота и центр (x, y): ";
-                std::cin >> scale >> center.first >> center.second;
-
-                if (idx < triangles.size()) {
-                    triangles[idx].scale(scale, center);
-                    std::cout << "Треугольник масштабирован.\n";
-                }
-                else {
-                    std::cout << "Неверный индекс.\n";
-                }
-            }
-            pause();
-            break;
-        }
-        case 0: {  // Назад
-            clearConsole();
-            break;
-        }
-        default:
-            std::cout << "Неверный выбор, попробуйте снова.\n";
-            pause();
-            break;
         }
     } while (choice != 0);
 }

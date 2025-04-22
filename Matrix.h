@@ -13,6 +13,7 @@ private:
     // Вспомогательные метод для вычисления определителя
     double determinantRecursive(const std::vector<std::vector<double>>& mat) const;
     std::vector<std::vector<double>> getMinor(int row, int col) const;
+    std::vector<std::vector<double>> getMinorFromMatrix(const std::vector<std::vector<double>>& mat, int row, int col) const;
 
 public:
     // Конструкторы

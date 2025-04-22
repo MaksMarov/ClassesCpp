@@ -1,86 +1,128 @@
-#include "Vector3D.h"
+п»ї#include "Vector3D.h"
+#include <iostream>        // Р”Р»СЏ std::cin, std::cout
+#include <cmath>           // Р”Р»СЏ sqrt (РґР»РёРЅР° РІРµРєС‚РѕСЂР°)
+#include <stdexcept>       // Р”Р»СЏ СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… РёСЃРєР»СЋС‡РµРЅРёР№
 
-// Конструктор по умолчанию
+// ========================= РљРћРќРЎРўР РЈРљРўРћР Р« =========================
+
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ (СЃРѕР·РґР°С‘С‚ РЅСѓР»РµРІРѕР№ РІРµРєС‚РѕСЂ: (0, 0, 0))
 Vector3D::Vector3D() : x(0), y(0), z(0) {}
 
-// Конструктор с заданием координат
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ, РєРѕС‚РѕСЂС‹Р№ РїРѕР·РІРѕР»СЏРµС‚ СЃСЂР°Р·Сѓ Р·Р°РґР°С‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹
 Vector3D::Vector3D(double x, double y, double z) : x(x), y(y), z(z) {}
 
-// Геттеры для координат
+// ========================= Р“Р•РўРўР•Р Р« =========================
+
+// РџРѕР»СѓС‡РёС‚СЊ X-РєРѕРѕСЂРґРёРЅР°С‚Сѓ
 double Vector3D::getX() const { return x; }
+
+// РџРѕР»СѓС‡РёС‚СЊ Y-РєРѕРѕСЂРґРёРЅР°С‚Сѓ
 double Vector3D::getY() const { return y; }
+
+// РџРѕР»СѓС‡РёС‚СЊ Z-РєРѕРѕСЂРґРёРЅР°С‚Сѓ
 double Vector3D::getZ() const { return z; }
 
-// Операции с векторами
+// ========================= РђР РР¤РњР•РўРРљРђ РЎ Р’Р•РљРўРћР РђРњР =========================
+
+// РЎР»РѕР¶РµРЅРёРµ РІРµРєС‚РѕСЂРѕРІ: (a, b, c) + (x, y, z) = (a+x, b+y, c+z)
 Vector3D Vector3D::operator+(const Vector3D& other) const {
-    return Vector3D(x + other.x, y + other.y, z + other.z); // Сложение координат
+    return Vector3D(x + other.x, y + other.y, z + other.z);
 }
 
+// Р’С‹С‡РёС‚Р°РЅРёРµ РІРµРєС‚РѕСЂРѕРІ: (a, b, c) - (x, y, z) = (aв€’x, bв€’y, cв€’z)
 Vector3D Vector3D::operator-(const Vector3D& other) const {
-    return Vector3D(x - other.x, y - other.y, z - other.z); // Вычитание координат
+    return Vector3D(x - other.x, y - other.y, z - other.z);
 }
 
+// РџСЂРѕРІРµСЂРєР° РЅР° СЂР°РІРµРЅСЃС‚РІРѕ РєРѕРѕСЂРґРёРЅР°С‚ РІРµРєС‚РѕСЂРѕРІ
 bool Vector3D::operator==(const Vector3D& other) const {
-    return x == other.x && y == other.y && z == other.z; // Сравнение координат на равенство
+    return x == other.x && y == other.y && z == other.z;
 }
 
+// РџСЂРѕРІРµСЂРєР° РЅР° РЅРµСЂР°РІРµРЅСЃС‚РІРѕ (С‡РµСЂРµР· РѕС‚СЂРёС†Р°РЅРёРµ РѕРїРµСЂР°С‚РѕСЂР° ==)
 bool Vector3D::operator!=(const Vector3D& other) const {
-    return !(*this == other); // Неравенство через противоположность равенства
+    return !(*this == other);
 }
 
-// Операции с числом (скаляром)
+// ========================= РђР РР¤РњР•РўРРљРђ РЎРћ РЎРљРђР›РЇР РћРњ =========================
+
+// РЈРјРЅРѕР¶РµРЅРёРµ РІРµРєС‚РѕСЂР° РЅР° С‡РёСЃР»Рѕ (РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ)
 Vector3D Vector3D::operator*(double scalar) const {
-    return Vector3D(x * scalar, y * scalar, z * scalar); // Умножение каждой координаты на скаляр
+    return Vector3D(x * scalar, y * scalar, z * scalar);
 }
 
+// Р”РµР»РµРЅРёРµ РІРµРєС‚РѕСЂР° РЅР° С‡РёСЃР»Рѕ (РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ РІ РјРµРЅСЊС€СѓСЋ СЃС‚РѕСЂРѕРЅСѓ)
 Vector3D Vector3D::operator/(double scalar) const {
-    if (scalar == 0) { // Проверка на деление на ноль
+    if (scalar == 0) {
+        // РќРµР»СЊР·СЏ РґРµР»РёС‚СЊ РЅР° РЅРѕР»СЊ вЂ” РєРёРґР°РµРј РёСЃРєР»СЋС‡РµРЅРёРµ
         throw std::invalid_argument("Division by zero");
     }
-    return Vector3D(x / scalar, y / scalar, z / scalar); // Деление каждой координаты на скаляр
+    return Vector3D(x / scalar, y / scalar, z / scalar);
 }
 
-// Скалярное произведение
+// ========================= РЎРљРђР›РЇР РќРћР• РџР РћРР—Р’Р•Р”Р•РќРР• =========================
+
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРєР°Р»СЏСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ (dot product) РґРІСѓС… РІРµРєС‚РѕСЂРѕРІ:
+// (x1*x2 + y1*y2 + z1*z2)
 double Vector3D::dot(const Vector3D& other) const {
-    return x * other.x + y * other.y + z * other.z; // Скалярное произведение
+    return x * other.x + y * other.y + z * other.z;
 }
 
-// Векторное произведение
+// ========================= Р’Р•РљРўРћР РќРћР• РџР РћРР—Р’Р•Р”Р•РќРР• =========================
+
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРІС‹Р№ РІРµРєС‚РѕСЂ вЂ” СЂРµР·СѓР»СЊС‚Р°С‚ РІРµРєС‚РѕСЂРЅРѕРіРѕ РїСЂРѕРёР·РІРµРґРµРЅРёСЏ
+// Р Р°Р±РѕС‚Р°РµС‚ РїРѕ С„РѕСЂРјСѓР»Рµ РІРµРєС‚РѕСЂРЅРѕРіРѕ РїСЂРѕРёР·РІРµРґРµРЅРёСЏ РІ в„ќВі
 Vector3D Vector3D::cross(const Vector3D& other) const {
     return Vector3D(
-        y * other.z - z * other.y, // X-компонента векторного произведения
-        z * other.x - x * other.z, // Y-компонента векторного произведения
-        x * other.y - y * other.x  // Z-компонента векторного произведения
+        y * other.z - z * other.y, // РќРѕРІР°СЏ X-РєРѕРјРїРѕРЅРµРЅС‚Р°
+        z * other.x - x * other.z, // РќРѕРІР°СЏ Y-РєРѕРјРїРѕРЅРµРЅС‚Р°
+        x * other.y - y * other.x  // РќРѕРІР°СЏ Z-РєРѕРјРїРѕРЅРµРЅС‚Р°
     );
 }
 
-// Длина вектора
+// ========================= Р”Р›РРќРђ Р’Р•РљРўРћР Рђ =========================
+
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РґР»РёРЅСѓ РІРµРєС‚РѕСЂР° (РјРѕРґСѓР»СЊ): в€љ(xВІ + yВІ + zВІ)
 double Vector3D::length() const {
-    return std::sqrt(x * x + y * y + z * z); // Теорема Пифагора для длины
+    return std::sqrt(x * x + y * y + z * z);
 }
 
+// ========================= РљРћРЎРРќРЈРЎ РЈР“Р›Рђ РњР•Р–Р”РЈ Р’Р•РљРўРћР РђРњР =========================
+
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ cos(СѓРіР»Р°) РјРµР¶РґСѓ РґРІСѓРјСЏ РІРµРєС‚РѕСЂР°РјРё РїРѕ С„РѕСЂРјСѓР»Рµ:
+// cos(Оё) = (AВ·B) / (|A|В·|B|)
 double Vector3D::cos(const Vector3D& other) const {
-    return dot(other) / (length() * other.length());
+    double lenA = length();
+    double lenB = other.length();
+
+    if (lenA == 0 || lenB == 0) {
+        // Р•СЃР»Рё С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РІРµРєС‚РѕСЂ вЂ” РЅСѓР»РµРІРѕР№, СѓРіРѕР» РЅРµ РѕРїСЂРµРґРµР»С‘РЅ
+        throw std::domain_error("Cannot compute angle with zero-length vector");
+    }
+
+    return dot(other) / (lenA * lenB);
 }
 
-// Оператор вывода
+// ========================= Р’Р’РћР”/Р’Р«Р’РћР” =========================
+
+// РћРїРµСЂР°С‚РѕСЂ РІС‹РІРѕРґР°: РґРµР»Р°РµС‚ РІРѕР·РјРѕР¶РЅС‹Рј std::cout << v;
 std::ostream& operator<<(std::ostream& os, const Vector3D& v) {
-    os << "Vector3D(" << v.x << ", " << v.y << ", " << v.z << ")"; // Форматированный вывод вектора
+    os << "Vector3D(" << v.x << ", " << v.y << ", " << v.z << ")";
     return os;
 }
 
-// Оператор ввода
+// РћРїРµСЂР°С‚РѕСЂ РІРІРѕРґР°: С‡РёС‚Р°РµС‚ РІРµРєС‚РѕСЂ СЃ РєРѕРЅСЃРѕР»Рё
 std::istream& operator>>(std::istream& is, Vector3D& v) {
     double x, y, z;
-    std::cout << "Введите координату X: ";
-    is >> x; // Ввод X
+    std::cout << "Р’РІРµРґРёС‚Рµ РєРѕРѕСЂРґРёРЅР°С‚Сѓ X: ";
+    if (!(is >> x)) throw std::invalid_argument("Invalid input X");
 
-    std::cout << "Введите координату Y: ";
-    is >> y; // Ввод Y
+    std::cout << "Р’РІРµРґРёС‚Рµ РєРѕРѕСЂРґРёРЅР°С‚Сѓ Y: ";
+    if (!(is >> y)) throw std::invalid_argument("Invalid input Y");
 
-    std::cout << "Введите координату Z: ";
-    is >> z; // Ввод Z
+    std::cout << "Р’РІРµРґРёС‚Рµ РєРѕРѕСЂРґРёРЅР°С‚Сѓ Z: ";
+    if (!(is >> z)) throw std::invalid_argument("Invalid input Z");
 
-    v = Vector3D(x, y, z); // Создание нового вектора с введёнными координатами
+    v = Vector3D(x, y, z); // РџСЂРёСЃРІР°РёРІР°РµРј СЃС‡РёС‚Р°РЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РІ РѕР±СЉРµРєС‚
     return is;
 }

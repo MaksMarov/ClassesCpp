@@ -1,248 +1,315 @@
-#include "Matrix.h"
-#include <iomanip>  // Для форматирования вывода с setprecision
+п»ї#include "Matrix.h"
+#include <iomanip>      // Р”Р»СЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ РІС‹РІРѕРґР° (setw, setprecision)
+#include <stdexcept>    // Р”Р»СЏ СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… РёСЃРєР»СЋС‡РµРЅРёР№ (invalid_argument Рё РґСЂ.)
+#include <limits>
+#include <string>
 
-// Конструктор для создания матрицы заданного размера
-Matrix::Matrix(int r, int c) : rows(r), cols(c), data(r, std::vector<double>(c, 0.0)) {}
+// ========================= РљРћРќРЎРўР РЈРљРўРћР Р« =========================
 
-// Конструктор для создания матрицы из данных
-Matrix::Matrix(const std::vector<std::vector<double>>& values)
-    : rows(values.size()), cols(values[0].size()), data(values) {
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ: СЃРѕР·РґР°С‘С‚ РјР°С‚СЂРёС†Сѓ Р·Р°РґР°РЅРЅРѕРіРѕ СЂР°Р·РјРµСЂР° (r Г— c), РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅСѓСЋ РЅСѓР»СЏРјРё
+Matrix::Matrix(int r, int c) : rows(r), cols(c), data(r, std::vector<double>(c, 0.0)) {
+    if (r <= 0 || c <= 0)
+        throw std::invalid_argument("Matrix dimensions must be positive.");  // Р Р°Р·РјРµСЂС‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹РјРё
 }
 
-// Оператор сложения матриц
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ: РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РјР°С‚СЂРёС†С‹ РёР· РґРІСѓРјРµСЂРЅРѕРіРѕ РІРµРєС‚РѕСЂР°
+Matrix::Matrix(const std::vector<std::vector<double>>& values)
+    : rows(values.size()), cols(values[0].size()), data(values) {
+    if (rows <= 0 || cols <= 0)
+        throw std::invalid_argument("Matrix dimensions must be positive.");
+
+    // РџСЂРѕРІРµСЂРєР°: РІСЃРµ СЃС‚СЂРѕРєРё РґРѕР»Р¶РЅС‹ РёРјРµС‚СЊ РѕРґРёРЅР°РєРѕРІРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚РѕР»Р±С†РѕРІ
+    for (size_t i = 1; i < values.size(); ++i)
+        if (values[i].size() != cols)
+            throw std::invalid_argument("All rows must have the same number of columns.");
+}
+
+// ========================= РђР РР¤РњР•РўРРљРђ РЎ РњРђРўР РР¦РђРњР =========================
+
+// РћРїРµСЂР°С‚РѕСЂ СЃР»РѕР¶РµРЅРёСЏ: A + B
 Matrix Matrix::operator+(const Matrix& other) const {
-    if (rows != other.rows || cols != other.cols)  // Проверка на совпадение размеров
+    if (rows != other.rows || cols != other.cols)
         throw std::invalid_argument("Matrix sizes must match for addition.");
 
     Matrix result(rows, cols);
     for (int i = 0; i < rows; ++i)
         for (int j = 0; j < cols; ++j)
-            result.data[i][j] = data[i][j] + other.data[i][j];  // Сложение элементов матриц
+            result.data[i][j] = data[i][j] + other.data[i][j];
+
     return result;
 }
 
-// Оператор вычитания матриц
+// РћРїРµСЂР°С‚РѕСЂ РІС‹С‡РёС‚Р°РЅРёСЏ: A - B
 Matrix Matrix::operator-(const Matrix& other) const {
-    if (rows != other.rows || cols != other.cols)  // Проверка на совпадение размеров
+    if (rows != other.rows || cols != other.cols)
         throw std::invalid_argument("Matrix sizes must match for subtraction.");
 
     Matrix result(rows, cols);
     for (int i = 0; i < rows; ++i)
         for (int j = 0; j < cols; ++j)
-            result.data[i][j] = data[i][j] - other.data[i][j];  // Вычитание элементов матриц
+            result.data[i][j] = data[i][j] - other.data[i][j];
+
     return result;
 }
 
-// Оператор умножения матриц
+// РћРїРµСЂР°С‚РѕСЂ СѓРјРЅРѕР¶РµРЅРёСЏ: A * B (РїРѕ РїСЂР°РІРёР»Сѓ СѓРјРЅРѕР¶РµРЅРёСЏ РјР°С‚СЂРёС†)
 Matrix Matrix::operator*(const Matrix& other) const {
-    if (cols != other.rows)  // Проверка на возможность умножения
+    if (cols != other.rows)
         throw std::invalid_argument("Matrix multiplication dimension mismatch.");
 
     Matrix result(rows, other.cols);
     for (int i = 0; i < rows; ++i)
         for (int j = 0; j < other.cols; ++j)
             for (int k = 0; k < cols; ++k)
-                result.data[i][j] += data[i][k] * other.data[k][j];  // Умножение матриц
+                result.data[i][j] += data[i][k] * other.data[k][j];
+
     return result;
 }
 
-// Оператор умножения матрицы на скаляр
+// ========================= РђР РР¤РњР•РўРРљРђ РЎРћ РЎРљРђР›РЇР РћРњ =========================
+
+// РћРїРµСЂР°С‚РѕСЂ СѓРјРЅРѕР¶РµРЅРёСЏ РЅР° СЃРєР°Р»СЏСЂ: A * О»
 Matrix Matrix::operator*(double scalar) const {
+    if (std::isnan(scalar))
+        throw std::invalid_argument("Scalar value cannot be NaN.");
+
     Matrix result(rows, cols);
     for (int i = 0; i < rows; ++i)
         for (int j = 0; j < cols; ++j)
-            result.data[i][j] = data[i][j] * scalar;  // Умножение каждого элемента на скаляр
+            result.data[i][j] = data[i][j] * scalar;
+
     return result;
 }
 
-// Оператор деления матрицы на скаляр
+// РћРїРµСЂР°С‚РѕСЂ РґРµР»РµРЅРёСЏ РЅР° СЃРєР°Р»СЏСЂ: A / О»
 Matrix Matrix::operator/(double scalar) const {
-    if (scalar == 0)  // Проверка на деление на ноль
+    if (scalar == 0.0)
         throw std::invalid_argument("Zero division.");
-    return *this * (1.0 / scalar);  // Деление через умножение на обратное значение
+    if (std::isnan(scalar))
+        throw std::invalid_argument("Scalar value cannot be NaN.");
+
+    return *this * (1.0 / scalar);
 }
 
-// Оператор сложения и присваивания
+// ========================= РџР РРЎР’РђРР’РђРќРР• =========================
 Matrix& Matrix::operator+=(const Matrix& other) {
-    return *this = *this + other;  // Сложение и присваивание
+    *this = *this + other;
+    return *this;
 }
 
-// Оператор вычитания и присваивания
 Matrix& Matrix::operator-=(const Matrix& other) {
-    return *this = *this - other;  // Вычитание и присваивание
+    *this = *this - other;
+    return *this;
 }
 
-// Оператор умножения и присваивания
 Matrix& Matrix::operator*=(double scalar) {
-    return *this = *this * scalar;  // Умножение и присваивание
+    *this = *this * scalar;
+    return *this;
 }
 
-// Оператор сравнения на равенство
+// ========================= РЎР РђР’РќР•РќРРЇ =========================
+
 bool Matrix::operator==(const Matrix& other) const {
-    return data == other.data;  // Сравнение данных матриц
+    return data == other.data;
 }
 
-// Оператор сравнения на неравенство
 bool Matrix::operator!=(const Matrix& other) const {
-    return !(*this == other);  // Отрицание оператора равенства
+    return !(*this == other);
 }
 
-// Проверка на квадратность матрицы
+// ========================= РўРРџ РњРђРўР РР¦Р« =========================
+
+// РљРІР°РґСЂР°С‚РЅР°СЏ Р»Рё РјР°С‚СЂРёС†Р°?
 bool Matrix::isSquare() const {
-    return rows == cols;  // Квадратная матрица имеет одинаковое количество строк и столбцов
+    return rows == cols;
 }
 
-// Проверка на диагональность
+// Р”РёР°РіРѕРЅР°Р»СЊРЅР°СЏ Р»Рё РјР°С‚СЂРёС†Р°?
 bool Matrix::isDiagonal() const {
-    if (!isSquare()) return false;  // Диагональная матрица должна быть квадратной
+    if (!isSquare()) return false;
+
     for (int i = 0; i < rows; ++i)
         for (int j = 0; j < cols; ++j)
-            if (i != j && std::abs(data[i][j]) > 1e-9)  // Если на не диагональных позициях есть элементы, отличные от 0
+            if (i != j && std::abs(data[i][j]) > 1e-9)
                 return false;
+
     return true;
 }
 
-// Проверка на единичность
+// Р•РґРёРЅРёС‡РЅР°СЏ Р»Рё РјР°С‚СЂРёС†Р°?
 bool Matrix::isIdentity() const {
-    if (!isSquare()) return false;  // Единичная матрица должна быть квадратной
+    if (!isSquare()) return false;
+
     for (int i = 0; i < rows; ++i)
         for (int j = 0; j < cols; ++j) {
-            if (i == j && std::abs(data[i][j] - 1) > 1e-9)  // Единичная матрица имеет 1 на главной диагонали
-                return false;
-            if (i != j && std::abs(data[i][j]) > 1e-9)  // Все остальные элементы должны быть 0
+            if ((i == j && std::abs(data[i][j] - 1.0) > 1e-9) ||
+                (i != j && std::abs(data[i][j]) > 1e-9))
                 return false;
         }
+
     return true;
 }
 
-// Проверка на нулевую матрицу
+// РќСѓР»РµРІР°СЏ Р»Рё РјР°С‚СЂРёС†Р°?
 bool Matrix::isZero() const {
-    for (auto& row : data)
-        for (auto& val : row)
-            if (std::abs(val) > 1e-9)  // Если найден элемент, отличный от 0
+    for (const auto& row : data)
+        for (double val : row)
+            if (std::abs(val) > 1e-9)
                 return false;
+
     return true;
 }
 
-// Проверка на симметричность
+// РЎРёРјРјРµС‚СЂРёС‡РЅР°СЏ Р»Рё РјР°С‚СЂРёС†Р° (AбµЂ = A)?
 bool Matrix::isSymmetric() const {
-    if (!isSquare()) return false;  // Симметричная матрица должна быть квадратной
+    if (!isSquare()) return false;
+
     for (int i = 0; i < rows; ++i)
         for (int j = 0; j < i; ++j)
-            if (std::abs(data[i][j] - data[j][i]) > 1e-9)  // Если элементы на симметричных позициях не равны
+            if (std::abs(data[i][j] - data[j][i]) > 1e-9)
                 return false;
+
     return true;
 }
 
-// Проверка на верхнюю треугольную матрицу
+// Р’РµСЂС…РЅСЏСЏ С‚СЂРµСѓРіРѕР»СЊРЅР°СЏ РјР°С‚СЂРёС†Р° (РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РЅРёР¶Рµ РіР»Р°РІРЅРѕР№ РґРёР°РіРѕРЅР°Р»Рё СЂР°РІРЅС‹ 0)
 bool Matrix::isUpperTriangular() const {
-    if (!isSquare()) return false;  // Верхняя треугольная матрица должна быть квадратной
+    if (!isSquare()) return false;
+
     for (int i = 1; i < rows; ++i)
         for (int j = 0; j < i; ++j)
-            if (std::abs(data[i][j]) > 1e-9)  // Если элементы ниже главной диагонали не равны 0
+            if (std::abs(data[i][j]) > 1e-9)
                 return false;
+
     return true;
 }
 
-// Проверка на нижнюю треугольную матрицу
+// РќРёР¶РЅСЏСЏ С‚СЂРµСѓРіРѕР»СЊРЅР°СЏ РјР°С‚СЂРёС†Р° (РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РІС‹С€Рµ РіР»Р°РІРЅРѕР№ РґРёР°РіРѕРЅР°Р»Рё СЂР°РІРЅС‹ 0)
 bool Matrix::isLowerTriangular() const {
-    if (!isSquare()) return false;  // Нижняя треугольная матрица должна быть квадратной
+    if (!isSquare()) return false;
+
     for (int i = 0; i < rows - 1; ++i)
         for (int j = i + 1; j < cols; ++j)
-            if (std::abs(data[i][j]) > 1e-9)  // Если элементы выше главной диагонали не равны 0
+            if (std::abs(data[i][j]) > 1e-9)
                 return false;
+
     return true;
 }
 
-// Вычисление определителя матрицы (рекурсивно)
+// ========================= Р”РћРџРћР›РќРРўР•Р›Р¬РќР«Р• РЎР’РћР™РЎРўР’Рђ =========================
+
+// Р РµРєСѓСЂСЃРёРІРЅРѕРµ РІС‹С‡РёСЃР»РµРЅРёРµ РѕРїСЂРµРґРµР»РёС‚РµР»СЏ (СЂР°Р·Р»РѕР¶РµРЅРёРµ РїРѕ РїРµСЂРІРѕР№ СЃС‚СЂРѕРєРµ)
 double Matrix::determinantRecursive(const std::vector<std::vector<double>>& mat) const {
     int n = mat.size();
-    if (n == 1) return mat[0][0];  // Определитель 1x1 - просто элемент
-    if (n == 2) return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];  // Определитель 2x2
+    if (n == 1) return mat[0][0];  // Р‘Р°Р·РѕРІС‹Р№ СЃР»СѓС‡Р°Р№ РґР»СЏ РјР°С‚СЂРёС†С‹ 1x1
+    if (n == 2)                    // Р‘Р°Р·РѕРІС‹Р№ СЃР»СѓС‡Р°Р№ РґР»СЏ РјР°С‚СЂРёС†С‹ 2x2
+        return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
 
     double det = 0.0;
     for (int i = 0; i < n; ++i) {
-        std::vector<std::vector<double>> submat(n - 1, std::vector<double>(n - 1));
-        for (int j = 1; j < n; ++j) {
-            int colIdx = 0;
-            for (int k = 0; k < n; ++k) {
-                if (k == i) continue;
-                submat[j - 1][colIdx++] = mat[j][k];
-            }
-        }
-        det += (i % 2 == 0 ? 1 : -1) * mat[0][i] * determinantRecursive(submat);  // Рекурсивное вычисление
+        // РџРѕР»СѓС‡Р°РµРј РјРёРЅРѕСЂ С‚РµРєСѓС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р° РїРµСЂРІРѕР№ СЃС‚СЂРѕРєРё
+        auto minor = getMinorFromMatrix(mat, 0, i);
+
+        // Р Р°Р·Р»РѕР¶РµРЅРёРµ РѕРїСЂРµРґРµР»РёС‚РµР»СЏ РїРѕ СЌР»РµРјРµРЅС‚Р°Рј РїРµСЂРІРѕР№ СЃС‚СЂРѕРєРё
+        double sign = (i % 2 == 0) ? 1.0 : -1.0;
+        det += sign * mat[0][i] * determinantRecursive(minor);
     }
     return det;
 }
 
-// Вычисление определителя матрицы
-double Matrix::determinant() const {
-    if (!isSquare())  // Определитель можно вычислить только для квадратных матриц
-        throw std::invalid_argument("Matrix must be square to compute determinant.");
-    return determinantRecursive(data);  // Рекурсивный метод
-}
-
-// Транспонирование матрицы
-Matrix Matrix::transpose() const {
-    Matrix result(cols, rows);
-    for (int i = 0; i < rows; ++i)
-        for (int j = 0; j < cols; ++j)
-            result.data[j][i] = data[i][j];  // Перемещение элементов по диагонали
-    return result;
-}
-
-// Алгебраическое дополнение (матрица миноров)
-Matrix Matrix::adjugate() const {
-    if (!isSquare())  // Алгебраическое дополнение только для квадратных матриц
-        throw std::invalid_argument("Matrix must be square for adjugate.");
-    Matrix result(rows, cols);
-    for (int i = 0; i < rows; ++i)
-        for (int j = 0; j < cols; ++j)
-            result.data[i][j] = std::pow(-1, i + j) * determinantRecursive(getMinor(i, j));  // Алгебраическое дополнение
-    return result;
-}
-
-// Получение минора (матрица без i-й строки и j-го столбца)
+// РџРѕР»СѓС‡РµРЅРёРµ РјРёРЅРѕСЂР° С‚РµРєСѓС‰РµР№ РјР°С‚СЂРёС†С‹ РїРѕ РёРЅРґРµРєСЃСѓ СЃС‚СЂРѕРєРё Рё СЃС‚РѕР»Р±С†Р°
 std::vector<std::vector<double>> Matrix::getMinor(int row, int col) const {
-    std::vector<std::vector<double>> minor(rows - 1, std::vector<double>(cols - 1));
+    return getMinorFromMatrix(data, row, col);
+}
 
-    int minorRow = 0, minorCol = 0;
-    for (int i = 0; i < rows; ++i) {
-        if (i == row) continue;  // Пропускаем строку, из которой удаляем элемент
-        minorCol = 0;
-        for (int j = 0; j < cols; ++j) {
-            if (j == col) continue;  // Пропускаем столбец, из которого удаляем элемент
-            minor[minorRow][minorCol++] = data[i][j];
+// РџРѕР»СѓС‡РµРЅРёРµ РјРёРЅРѕСЂР° РїСЂРѕРёР·РІРѕР»СЊРЅРѕР№ РјР°С‚СЂРёС†С‹ (СѓРґР°Р»РµРЅРёРµ СЃС‚СЂРѕРєРё Рё СЃС‚РѕР»Р±С†Р°)
+std::vector<std::vector<double>> Matrix::getMinorFromMatrix(const std::vector<std::vector<double>>& mat, int row, int col) const {
+    int n = mat.size();
+    std::vector<std::vector<double>> minor;
+    minor.reserve(n - 1);
+
+    for (int i = 0; i < n; ++i) {
+        if (i == row) continue;
+        std::vector<double> minorRow;
+        minorRow.reserve(n - 1);
+        for (int j = 0; j < n; ++j) {
+            if (j == col) continue;
+            minorRow.push_back(mat[i][j]);
         }
-        ++minorRow;
+        minor.push_back(std::move(minorRow));
     }
 
     return minor;
 }
 
+// Р’С‹С‡РёСЃР»РµРЅРёРµ РѕРїСЂРµРґРµР»РёС‚РµР»СЏ С‚РµРєСѓС‰РµР№ РјР°С‚СЂРёС†С‹
+double Matrix::determinant() const {
+    if (!isSquare())
+        throw std::invalid_argument("Matrix must be square to compute determinant.");
 
-// Обратная матрица
-Matrix Matrix::inverse() const {
-    double det = determinant();
-    if (std::abs(det) < 1e-9)  // Если определитель равен 0, обратной матрицы не существует
-        throw std::invalid_argument("Matrix is singular and cannot be inverted.");
-    return adjugate() / det;  // Обратная матрица = (алгебраическое дополнение) / определитель
+    return determinantRecursive(data);
 }
 
-// Оператор вывода матрицы
+// РџРѕР»СѓС‡РµРЅРёРµ С‚СЂР°РЅСЃРїРѕРЅРёСЂРѕРІР°РЅРЅРѕР№ РјР°С‚СЂРёС†С‹ (AбµЂ)
+Matrix Matrix::transpose() const {
+    Matrix result(cols, rows);
+    for (int i = 0; i < rows; ++i)
+        for (int j = 0; j < cols; ++j)
+            result.data[j][i] = data[i][j];
+
+    return result;
+}
+
+// РђР»РіРµР±СЂР°РёС‡РµСЃРєРѕРµ РґРѕРїРѕР»РЅРµРЅРёРµ (РјР°С‚СЂРёС†Р° РєРѕС„Р°РєС‚РѕСЂРѕРІ)
+Matrix Matrix::adjugate() const {
+    if (!isSquare())
+        throw std::invalid_argument("Matrix must be square for adjugate.");
+
+    Matrix result(rows, cols);
+    for (int i = 0; i < rows; ++i)
+        for (int j = 0; j < cols; ++j)
+            result.data[i][j] = std::pow(-1, i + j) * determinantRecursive(getMinor(i, j));
+
+    return result.transpose();
+}
+
+// РџРѕР»СѓС‡РµРЅРёРµ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹: AвЃ»В№ = A* / det(A)
+Matrix Matrix::inverse() const {
+    double det = determinant();
+    if (std::abs(det) < 1e-9)
+        throw std::invalid_argument("Matrix is singular and cannot be inverted.");
+
+    return adjugate() / det;
+}
+
+// ========================= Р’Р’РћР”/Р’Р«Р’РћР” =========================
+
+// Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅС‹Р№ РІС‹РІРѕРґ РјР°С‚СЂРёС†С‹ РІ РїРѕС‚РѕРє
 std::ostream& operator<<(std::ostream& os, const Matrix& m) {
+    os << std::fixed << std::setprecision(2);
     for (const auto& row : m.data) {
-        for (const auto& val : row)
-            os << std::setw(10) << std::fixed << std::setprecision(2) << val << " ";  // Форматированный вывод
-        os << std::endl;
+        os << "| ";
+        for (const auto& val : row) {
+            os << std::setw(8) << val << " ";
+        }
+        os << "|\n";
     }
     return os;
 }
 
-// Оператор ввода матрицы
+// Р’РІРѕРґ РјР°С‚СЂРёС†С‹ РёР· РїРѕС‚РѕРєР°
 std::istream& operator>>(std::istream& is, Matrix& m) {
-    for (int i = 0; i < m.rows; ++i)
-        for (int j = 0; j < m.cols; ++j)
-            is >> m.data[i][j];  // Ввод элементов матрицы
+    for (int i = 0; i < m.rows; ++i) {
+        for (int j = 0; j < m.cols; ++j) {
+            if (!(is >> m.data[i][j])) {
+                // РћР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РєРё: СЃР±СЂРѕСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїРѕС‚РѕРєР° Рё РѕС‡РёСЃС‚РєР° РІРІРѕРґР°
+                is.clear();
+                is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                throw std::runtime_error(
+                    "РћС€РёР±РєР° РІРІРѕРґР°: СЌР»РµРјРµРЅС‚ РјР°С‚СЂРёС†С‹ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С‡РёСЃР»РѕРј (РїРѕР·РёС†РёСЏ "
+                    + std::to_string(i) + "," + std::to_string(j) + ").");
+            }
+        }
+    }
     return is;
 }
